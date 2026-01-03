@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7960950786352200347}
   - component: {fileID: 5715651895307083562}
+  - component: {fileID: 6123912481696588077}
   m_Layer: 0
-  m_Name: Logger
+  m_Name: Monobehavior Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,3 +47,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MySmashHit.Helpers.Logger
   _isDebugging: 1
   _lineHeight: 25
+--- !u!114 &6123912481696588077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8864432767416199039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b2ae98fcfb3bdb4290550c7d7da3950, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MySmashHit.Helpers.CoroutineManager

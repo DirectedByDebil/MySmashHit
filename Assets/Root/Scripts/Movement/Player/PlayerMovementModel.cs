@@ -1,8 +1,8 @@
 ﻿using MySmashHit.Helpers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 using System.Collections;
+
 
 namespace MySmashHit.Movement.Player
 {
@@ -11,19 +11,17 @@ namespace MySmashHit.Movement.Player
 
         private readonly Rigidbody _rb;
         private readonly IPlayerMovementSettings _settings;
-        private readonly Func<IEnumerator, Coroutine> _startCoroutine;
 
         private bool _isOnGround;
+        private bool _canJump;
         private bool _isJumping;
 
 
         internal PlayerMovementModel(Rigidbody rb,
-            IPlayerMovementSettings settings,
-            Func<IEnumerator, Coroutine> startCoroutine)
+            IPlayerMovementSettings settings)
         {
             _rb = rb;
             _settings = settings;
-            _startCoroutine = startCoroutine;
         }
 
 
@@ -33,16 +31,21 @@ namespace MySmashHit.Movement.Player
         {
             if (_isOnGround)
             {
-                _startCoroutine(SmoothStop());
+                CoroutineManager.Instance.AddCoroutine("smooth stop", SmoothStop());
             }
         }
 
-        //todo check this
-        // if do _isJumping false maybe better use callbacks
-        internal virtual void OnJumpChange(bool isJumped)
+
+        internal virtual void OnJumpStarted(InputAction.CallbackContext context)
         {
-            _isJumping = _isOnGround && isJumped;
+            CoroutineManager.Instance.AddCoroutine("try jump", TryJump());
         }
+
+        internal virtual void OnJumpCancelled(InputAction.CallbackContext context)
+        {
+            CoroutineManager.Instance.RemoveCoroutine("try jump");
+        }
+
 
         #endregion
 
@@ -55,6 +58,7 @@ namespace MySmashHit.Movement.Player
             if (collision.gameObject.CompareTag("Ground"))
             {
                 _isOnGround = true;
+                _canJump = true;
             }
         }
 
@@ -64,6 +68,7 @@ namespace MySmashHit.Movement.Player
             if (collision.gameObject.CompareTag("Ground"))
             {
                 _isOnGround = false;
+                CoroutineManager.Instance.AddCoroutine("coyote time", CoyoteTime());
             }
         }
 
@@ -78,10 +83,10 @@ namespace MySmashHit.Movement.Player
 
             if (_isJumping)
             {
-
-                _rb.AddForce(Vector3.up * _settings.JumpHeight, ForceMode.Impulse);
-
+                CoroutineManager.Instance.AddCoroutine("jump", SmoothJump());
                 _isJumping = false;
+                _canJump = false;
+                _isOnGround = false;
             }
 
 
@@ -91,16 +96,16 @@ namespace MySmashHit.Movement.Player
             }
         }
 
-
         private bool CanMove()
         {
-
             Vector2 onGroundMovement = new(_rb.linearVelocity.x, _rb.linearVelocity.z);
-
+         
             return onGroundMovement.magnitude < _settings.MaxSpeed;
         }
 
-        
+
+        #region Coroutines
+
         private IEnumerator SmoothStop()
         {
 
@@ -129,5 +134,57 @@ namespace MySmashHit.Movement.Player
             }
             while (remainedSteps > 0);
         }
+
+        private IEnumerator TryJump()
+        {
+
+            while (true)
+            {
+
+                _isJumping = _canJump;
+                //todo maybe interval in settings
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
+
+        private IEnumerator SmoothJump()
+        {
+
+            SmoothJump smoothJump = _settings.SmoothJump;
+            float duration = smoothJump.JumpTime;
+            float height = smoothJump.Height;
+
+            float upTime = duration / 2;
+            Vector3 jumpPos = _rb.position;
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+
+                float stage = elapsedTime < upTime ?
+                    elapsedTime / upTime :
+                    2f - elapsedTime / upTime;
+
+                Vector3 newPos = _rb.position;
+                newPos.y = jumpPos.y + height * smoothJump.JumpCurve.Evaluate(stage);
+
+                _rb.position = newPos;
+
+                elapsedTime += Time.fixedDeltaTime;
+                yield return null;
+            }
+            
+            yield return null;
+        }
+
+        private IEnumerator CoyoteTime()
+        {
+            yield return new WaitForSeconds(_settings.CoyoteTime);
+            
+            _canJump = _isOnGround;
+        }
+
+        #endregion
     }
 }

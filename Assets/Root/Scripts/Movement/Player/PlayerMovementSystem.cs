@@ -23,22 +23,13 @@ namespace MySmashHit.Movement.Player
         #region Unity Callbacks
 
         private void Awake() => Init();
-
         private void OnEnable() => SetMovement();
-
         private void OnDisable() => UnsetMovement();
 
         private void OnCollisionEnter(Collision collision) => _model.OnCollisionEnter(collision);
-
         private void OnCollisionExit(Collision collision) => _model.OnCollisionExit(collision);
 
-        private void Update()
-        {
-            _controller.UpdateInput();
-
-            _model.OnJumpChange(_controller.IsJumpPressed);
-        }
-
+        private void Update() => _controller.UpdateInput();
         private void FixedUpdate() => _model.MakeMovement(_controller.Direction);
 
         private void OnGUI() { GUILogger.Instance.LogVelocity(_rb); }
@@ -51,18 +42,24 @@ namespace MySmashHit.Movement.Player
             _rb = GetComponent<Rigidbody>();
 
             _controller = new PlayerMovementController();
-            _model = new PlayerMovementModel(_rb, _settings, StartCoroutine);
+            _model = new PlayerMovementModel(_rb, _settings);
         }
 
 
         protected virtual void SetMovement()
         {
-            _controller.MoveCancelled += _model.OnMoveCancelled;    
+            _controller.MoveCancelled += _model.OnMoveCancelled;
+
+            _controller.JumpStarted += _model.OnJumpStarted;
+            _controller.JumpCancelled += _model.OnJumpCancelled;
         }
 
         protected virtual void UnsetMovement()
         {
-            _controller.MoveCancelled -= _model.OnMoveCancelled;    
+            _controller.MoveCancelled -= _model.OnMoveCancelled;
+            
+            _controller.JumpStarted -= _model.OnJumpStarted;
+            _controller.JumpCancelled -= _model.OnJumpCancelled;
         }
     }
 }

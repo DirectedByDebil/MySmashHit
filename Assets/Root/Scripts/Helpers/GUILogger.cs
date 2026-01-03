@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace MySmashHit.Helpers
 {
-    internal sealed class GUILogger : MonoBehaviour
+    internal sealed class GUILogger : MonoBehaviour, IGUILogger
     {
 
-        public static GUILogger Instance { get => _instance; }
-        private static GUILogger _instance;
+        public static IGUILogger Instance { get => _instance; }
+        private static IGUILogger _instance;
 
         [SerializeField, Space] private bool _isDebugging;
         [SerializeField, Space, Range(0, 50)] private float _lineHeight = 25;

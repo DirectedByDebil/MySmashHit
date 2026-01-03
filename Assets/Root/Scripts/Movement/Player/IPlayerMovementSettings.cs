@@ -2,6 +2,9 @@
 {
     public interface IPlayerMovementSettings : IMovementSettings
     {
-        public float JumpHeight { get; }
+
+        public float CoyoteTime { get; }
+
+        public SmoothJump SmoothJump { get; }
     }
 }

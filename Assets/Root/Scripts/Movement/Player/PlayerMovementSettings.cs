@@ -6,7 +6,11 @@ namespace MySmashHit.Movement.Player
     internal sealed class PlayerMovementSettings : MovementSettings, IPlayerMovementSettings
     {
 
-        [field: SerializeField, Space, Range(0, 80)]
-        public float JumpHeight { get; private set; }
+        [field: SerializeField, Space, Range(0f, 1f)]
+        public float CoyoteTime { get; private set; }
+
+
+        [field: SerializeField, Space]
+        public SmoothJump SmoothJump { get; private set; }
     }
 }

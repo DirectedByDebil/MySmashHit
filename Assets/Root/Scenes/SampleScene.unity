@@ -545,7 +545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8864432767416199039, guid: 158ea23c89ea8c6428414763b4affd39, type: 3}
       propertyPath: m_Name
-      value: Logger
+      value: Monobehavior Core
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

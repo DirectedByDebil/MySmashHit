@@ -9,12 +9,23 @@ namespace MySmashHit.Movement.Player
 
         internal event Action<InputAction.CallbackContext> MoveCancelled
         {
-            add { _moveAction.canceled += value; }
-            remove { _moveAction.canceled -= value; }
+            add => _moveAction.canceled += value;
+            remove => _moveAction.canceled -= value;
+        }
+
+        internal event Action<InputAction.CallbackContext> JumpStarted
+        {
+            add => _jumpAction.started += value;
+            remove => _jumpAction.started -= value;
+        }
+
+        internal event Action<InputAction.CallbackContext> JumpCancelled
+        {
+            add => _jumpAction.canceled += value;
+            remove => _jumpAction.canceled -= value;
         }
 
         internal Vector3 Direction { get; private set; }
-        internal bool IsJumpPressed { get => _jumpAction.IsPressed(); }
 
 
         private readonly InputAction _moveAction;
