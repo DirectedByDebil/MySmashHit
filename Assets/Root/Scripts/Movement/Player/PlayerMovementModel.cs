@@ -161,6 +161,8 @@ namespace MySmashHit.Movement.Player
 
             while (elapsedTime < duration)
             {
+                //todo
+                //add stop if landed
 
                 float stage = elapsedTime < upTime ?
                     elapsedTime / upTime :

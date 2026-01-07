@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 namespace MySmashHit.Helpers
 {
@@ -7,5 +8,7 @@ namespace MySmashHit.Helpers
         public void AddLog(string key, string value);
 
         public void LogVelocity(Rigidbody rb);
+
+        public void AddGizmos(string key, Action action);
     }
 }

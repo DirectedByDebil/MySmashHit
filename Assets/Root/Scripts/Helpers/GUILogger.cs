@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 namespace MySmashHit.Helpers
@@ -14,6 +15,7 @@ namespace MySmashHit.Helpers
 
 
         private Dictionary<string, string> _logs = new ();
+        private Dictionary<string, Action> _gizmos = new ();
 
 
         private void Awake()
@@ -41,6 +43,17 @@ namespace MySmashHit.Helpers
         }
 
 
+        private void OnDrawGizmos()
+        {
+            if (!_isDebugging) return;
+           
+            foreach (Action gizmos in _gizmos.Values)
+            {
+                gizmos();
+            }
+        }
+
+
         public void LogVelocity(Rigidbody rb)
         {
 
@@ -64,6 +77,15 @@ namespace MySmashHit.Helpers
             if (!_logs.TryAdd(key, value))
             {
                 _logs[key] = value;
+            }
+        }
+
+
+        public void AddGizmos(string key, Action action)
+        {
+            if (!_gizmos.TryAdd(key, action))
+            {
+                _gizmos[key] = action;
             }
         }
     }

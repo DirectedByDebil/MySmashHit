@@ -43,8 +43,20 @@ namespace MySmashHit.Movement.Player
         {
             Vector3 moveDirection = _moveAction.ReadValue<Vector2>();
             (moveDirection.y, moveDirection.z) = (moveDirection.z, moveDirection.y);
+            
+            Direction = GetRelativeFromCamera(moveDirection);
+        }
 
-            Direction = moveDirection;
+
+        private Vector3 GetRelativeFromCamera(Vector3 direction)
+        {
+
+            Transform cameraT = Camera.main.transform;
+
+            direction = cameraT.forward * direction.z + cameraT.right * direction.x;
+            direction.Normalize();
+
+            return direction;
         }
     }
 }
