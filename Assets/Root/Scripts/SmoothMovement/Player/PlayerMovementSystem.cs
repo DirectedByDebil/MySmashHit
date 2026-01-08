@@ -1,7 +1,7 @@
 using MySmashHit.Helpers;
 using UnityEngine;
 
-namespace MySmashHit.Movement.Player
+namespace SmoothMovement.Player
 {
     /// <summary>
     /// Class for managing player movement depending on game conditions

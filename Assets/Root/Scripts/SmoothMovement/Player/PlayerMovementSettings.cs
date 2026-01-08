@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MySmashHit.Movement.Player
+namespace SmoothMovement.Player
 {
     [CreateAssetMenu(fileName = "PlayerMovementSettings", menuName = "Settings/PlayerMovementSettings")]
     internal sealed class PlayerMovementSettings : MovementSettings, IPlayerMovementSettings

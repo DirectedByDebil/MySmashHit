@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 
 
-namespace MySmashHit.Movement.Player
+namespace SmoothMovement.Player
 {
     internal class PlayerMovementModel
     {
@@ -161,8 +161,11 @@ namespace MySmashHit.Movement.Player
 
             while (elapsedTime < duration)
             {
-                //todo
-                //add stop if landed
+
+                if (_isOnGround && !_isJumping)
+                {
+                    break;
+                }
 
                 float stage = elapsedTime < upTime ?
                     elapsedTime / upTime :

@@ -2,7 +2,7 @@
 using UnityEngine.InputSystem;
 using System;
 
-namespace MySmashHit.Movement.Player
+namespace SmoothMovement.Player
 {
     internal class PlayerMovementController
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-namespace MySmashHit.Movement
+namespace SmoothMovement
 {
 
     [Serializable]

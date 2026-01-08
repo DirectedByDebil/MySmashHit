@@ -1,4 +1,4 @@
-﻿namespace MySmashHit.Movement.Player
+﻿namespace SmoothMovement.Player
 {
     public interface IPlayerMovementSettings : IMovementSettings
     {

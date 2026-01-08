@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MySmashHit.Movement
+namespace SmoothMovement
 {
 
     [CreateAssetMenu(fileName = "MovementSettings", menuName = "Settings/MovementSettings")]

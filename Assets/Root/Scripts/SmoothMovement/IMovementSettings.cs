@@ -1,4 +1,4 @@
-﻿namespace MySmashHit.Movement
+﻿namespace SmoothMovement
 {
     public interface IMovementSettings
     {
