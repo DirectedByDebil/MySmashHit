@@ -15,8 +15,8 @@ MonoBehaviour:
   <MaxSpeed>k__BackingField: 15
   <Acceleration>k__BackingField: 100
   <SmoothStop>k__BackingField:
-    <MaxTime>k__BackingField: 0.7
-    <Steps>k__BackingField: 5
+    <MaxTime>k__BackingField: 1
+    <Steps>k__BackingField: 6
     <StopCurve>k__BackingField:
       serializedVersion: 2
       m_Curve:
@@ -43,7 +43,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   <CoyoteTime>k__BackingField: 0.286
   <SmoothJump>k__BackingField:
-    <JumpTime>k__BackingField: 3.5
+    <JumpTime>k__BackingField: 1
     <Height>k__BackingField: 4
     <JumpCurve>k__BackingField:
       serializedVersion: 2

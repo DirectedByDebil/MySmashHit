@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System;
 
 
 namespace SmoothMovement.Player
@@ -11,6 +12,12 @@ namespace SmoothMovement.Player
 
         private readonly Rigidbody _rb;
         private readonly IPlayerMovementSettings _settings;
+
+        private readonly WaitForSeconds _bufferInput;
+        private readonly WaitForSeconds _coyoteTime;
+
+
+        private InputState _jumpState;
 
         private bool _isOnGround;
         private bool _canJump;
@@ -22,6 +29,9 @@ namespace SmoothMovement.Player
         {
             _rb = rb;
             _settings = settings;
+
+            _bufferInput = new WaitForSeconds(0.2f);
+            _coyoteTime = new WaitForSeconds(_settings.CoyoteTime);
         }
 
 
@@ -54,6 +64,8 @@ namespace SmoothMovement.Player
 
         internal void OnCollisionEnter(Collision collision)
         {
+            //stop jump if collapsed
+            _isJumping = false;
 
             if (collision.gameObject.CompareTag("Ground"))
             {
@@ -68,6 +80,7 @@ namespace SmoothMovement.Player
             if (collision.gameObject.CompareTag("Ground"))
             {
                 _isOnGround = false;
+                CoroutineManager.Instance.RemoveCoroutine("coyote time");
                 CoroutineManager.Instance.AddCoroutine("coyote time", CoyoteTime());
             }
         }
@@ -81,26 +94,34 @@ namespace SmoothMovement.Player
             moveDirection *= _settings.Acceleration;
             moveDirection.y = _rb.linearVelocity.y;
 
-            if (_isJumping)
+            GUILogger.Instance.AddLog("move dir", moveDirection.normalized.ToString());
+            if (_jumpState == InputState.Pending)
             {
                 CoroutineManager.Instance.AddCoroutine("jump", SmoothJump());
-                _isJumping = false;
+
+                _jumpState = InputState.Executed;
                 _canJump = false;
                 _isOnGround = false;
             }
 
-
-            if (CanMove())
+            var (canMove, _) = CanMove(moveDirection);
+            if (canMove)
             {
                 _rb.AddForce(moveDirection, ForceMode.Force);
             }
         }
 
-        private bool CanMove()
+        
+        private ValueTuple<bool, bool> CanMove(Vector3 moveDirection)
         {
             Vector2 onGroundMovement = new(_rb.linearVelocity.x, _rb.linearVelocity.z);
+            bool canMove = onGroundMovement.magnitude < _settings.MaxSpeed;
          
-            return onGroundMovement.magnitude < _settings.MaxSpeed;
+            Vector2 input = new(moveDirection.x, moveDirection.z);
+            bool isMoving = input.magnitude > 0f;
+
+
+            return (canMove, isMoving);
         }
 
 
@@ -140,10 +161,12 @@ namespace SmoothMovement.Player
 
             while (true)
             {
+                if (_canJump)
+                {
+                    _jumpState = InputState.Pending;
+                }
 
-                _isJumping = _canJump;
-                //todo maybe interval in settings
-                yield return new WaitForSeconds(0.2f);
+                yield return _bufferInput;
             }
         }
 
@@ -157,16 +180,24 @@ namespace SmoothMovement.Player
             float upTime = duration / 2;
             Vector3 jumpPos = _rb.position;
 
+            var wait = new WaitForFixedUpdate();
+
+            _isJumping = true;
             float elapsedTime = 0f;
 
             while (elapsedTime < duration)
             {
-
-                if (_isOnGround && !_isJumping)
+                // Early jump termination condition
+                // Jump is interrupted if:
+                // 1. Player touches the ground AND the jump button is no longer active (released or buffer expired)
+                // 2. OR jump was forcefully stopped externally (ceiling collision, etc.)
+                if (_isOnGround && _jumpState != InputState.Pending || !_isJumping)
                 {
+                    // stop jumping
+                    _isJumping = false;
                     break;
                 }
-
+                
                 float stage = elapsedTime < upTime ?
                     elapsedTime / upTime :
                     2f - elapsedTime / upTime;
@@ -174,19 +205,21 @@ namespace SmoothMovement.Player
                 Vector3 newPos = _rb.position;
                 newPos.y = jumpPos.y + height * smoothJump.JumpCurve.Evaluate(stage);
 
-                _rb.position = newPos;
+                _rb.MovePosition(newPos);
 
                 elapsedTime += Time.fixedDeltaTime;
-                yield return null;
+                yield return wait;
             }
-            
-            yield return null;
+
+            _isJumping = false;
+            _jumpState = InputState.None;
+            yield return wait;
         }
 
         private IEnumerator CoyoteTime()
         {
-            yield return new WaitForSeconds(_settings.CoyoteTime);
-            
+            yield return _coyoteTime;
+
             _canJump = _isOnGround;
         }
 
