@@ -1,4 +1,4 @@
-using MySmashHit.Helpers;
+using Core;
 using UnityEngine;
 
 namespace SmoothMovement.Player

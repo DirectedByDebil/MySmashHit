@@ -1,4 +1,4 @@
-﻿using MySmashHit.Helpers;
+﻿using Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -29,7 +29,7 @@ namespace SmoothMovement.Player
         {
             _rb = rb;
             _settings = settings;
-
+            
             _bufferInput = new WaitForSeconds(0.2f);
             _coyoteTime = new WaitForSeconds(_settings.CoyoteTime);
         }
@@ -41,19 +41,19 @@ namespace SmoothMovement.Player
         {
             if (_isOnGround)
             {
-                CoroutineManager.Instance.AddCoroutine("smooth stop", SmoothStop());
+                CoroutineManager.Instance.AddCoroutine("player_smooth_stop", SmoothStop());
             }
         }
 
 
         internal virtual void OnJumpStarted(InputAction.CallbackContext context)
         {
-            CoroutineManager.Instance.AddCoroutine("try jump", TryJump());
+            CoroutineManager.Instance.AddCoroutine("player_try_jump", TryJump());
         }
 
         internal virtual void OnJumpCancelled(InputAction.CallbackContext context)
         {
-            CoroutineManager.Instance.RemoveCoroutine("try jump");
+            CoroutineManager.Instance.RemoveCoroutine("player_try_jump");
         }
 
 
@@ -80,8 +80,8 @@ namespace SmoothMovement.Player
             if (collision.gameObject.CompareTag("Ground"))
             {
                 _isOnGround = false;
-                CoroutineManager.Instance.RemoveCoroutine("coyote time");
-                CoroutineManager.Instance.AddCoroutine("coyote time", CoyoteTime());
+                CoroutineManager.Instance.RemoveCoroutine("player_coyote_time");
+                CoroutineManager.Instance.AddCoroutine("player_coyote_time", CoyoteTime());
             }
         }
 
@@ -97,7 +97,7 @@ namespace SmoothMovement.Player
             GUILogger.Instance.AddLog("move dir", moveDirection.normalized.ToString());
             if (_jumpState == InputState.Pending)
             {
-                CoroutineManager.Instance.AddCoroutine("jump", SmoothJump());
+                CoroutineManager.Instance.AddCoroutine("player_jump", SmoothJump());
 
                 _jumpState = InputState.Executed;
                 _canJump = false;
